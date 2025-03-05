@@ -164,6 +164,14 @@ class TrainerSeeder extends Seeder
                 ['day' => 'Mardi', 'start_time' => '09:00', 'end_time' => '12:00'],
                 ['day' => 'Jeudi', 'start_time' => '09:00', 'end_time' => '12:00'],
             ],
+            'EL AAHED Fatima-Zohra' => [
+                ['day' => 'Vendredi', 'start_time' => '09:00', 'end_time' => '12:00'],
+                ['day' => 'Samedi', 'start_time' => '09:00', 'end_time' => '13:00'],
+            ],
+            'ABARAOU Moha' => [
+                ['day' => 'Vendredi', 'start_time' => '09:00', 'end_time' => '13:00'],
+                ['day' => 'Vendredi', 'start_time' => '14:30', 'end_time' => '18:30'],
+            ],
             'BOUZIANE Mouna' => [
                 ['day' => 'Mercredi', 'start_time' => '14:00', 'end_time' => '15:30'],
                 ['day' => 'Mercredi', 'start_time' => '15:30', 'end_time' => '17:00'],
