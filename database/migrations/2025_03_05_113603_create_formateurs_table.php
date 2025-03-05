@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('bank_account');
             $table->string('subjects');
+            $table->string('bank_name')->default('CIH Bank');
             $table->timestamps();
         });
     }

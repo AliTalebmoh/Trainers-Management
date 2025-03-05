@@ -4,6 +4,13 @@
 <div class="container">
     <h1 class="mb-4">Trainers List</h1>
 
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="card mb-4">
         <div class="card-body">
             <form action="{{ route('formateur.index') }}" method="GET" class="row g-3 align-items-end">
@@ -44,6 +51,8 @@
                             <td>
                                 <a href="{{ route('formateur.details', ['formateur_id' => $formateur->id, 'month' => request('month', 2)]) }}" 
                                    class="btn btn-primary btn-sm">View Details</a>
+                                <a href="{{ route('formateur.edit', ['formateur_id' => $formateur->id]) }}"
+                                   class="btn btn-warning btn-sm">Edit</a>
                             </td>
                         </tr>
                         @endforeach

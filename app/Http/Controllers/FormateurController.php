@@ -57,4 +57,72 @@ class FormateurController extends Controller
 
         return response()->download(storage_path('app/public/' . $filename))->deleteFileAfterSend();
     }
+
+    public function edit($formateur_id)
+    {
+        $formateur = Formateur::with(['seances', 'salary'])->findOrFail($formateur_id);
+
+        // Get the first month's data as template
+        $monthlyData = $formateur->seances
+            ->groupBy('duration_month')
+            ->map(function ($sessions) {
+                return [
+                    'total_hours' => $sessions->sum('duration'),
+                    'typical_start_time' => $sessions->first()->start_time->format('H:i'),
+                    'typical_end_time' => $sessions->first()->end_time->format('H:i')
+                ];
+            })
+            ->first();
+        
+        return view('formateurs.edit', compact('formateur', 'monthlyData'));
+    }
+
+    public function update(Request $request, $formateur_id)
+    {
+        $formateur = Formateur::findOrFail($formateur_id);
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'subjects' => 'required|string|max:255',
+            'bank_account' => 'required|string|max:255',
+            'bank_name' => 'required|string|max:255',
+            'price_per_hour' => 'required|numeric|min:0',
+            'total_hours' => 'required|numeric|min:0',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+        ]);
+
+        // Update trainer basic info
+        $formateur->update([
+            'name' => $validated['name'],
+            'subjects' => $validated['subjects'],
+            'bank_account' => $validated['bank_account'],
+            'bank_name' => $validated['bank_name']
+        ]);
+
+        // Update salary info and calculate new total amount
+        $formateur->salary->update([
+            'price_per_hour' => $validated['price_per_hour'],
+            'total_amount' => $validated['total_hours'] * $validated['price_per_hour']
+        ]);
+
+        // Update all sessions with the new times, hours, and price
+        $sessionsPerMonth = $formateur->seances->groupBy('duration_month');
+        foreach ($sessionsPerMonth as $month => $sessions) {
+            $sessionsCount = $sessions->count();
+            if ($sessionsCount > 0) {
+                Seance::where('formateur_id', $formateur->id)
+                    ->where('duration_month', $month)
+                    ->update([
+                        'start_time' => $validated['start_time'],
+                        'end_time' => $validated['end_time'],
+                        'duration' => $validated['total_hours'] / $sessionsCount,
+                        'price_per_hour' => $validated['price_per_hour']
+                    ]);
+            }
+        }
+
+        return redirect()->route('formateur.index')
+            ->with('success', 'Trainer information updated successfully for all months');
+    }
 }

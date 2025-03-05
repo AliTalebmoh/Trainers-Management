@@ -34,7 +34,7 @@ class FormularExport
         $sheet->getColumnDimension('C')->setWidth(20);
         $sheet->getColumnDimension('D')->setWidth(20);
         $sheet->getColumnDimension('E')->setWidth(20);
-        $sheet->getColumnDimension('F')->setWidth(20);
+        $sheet->getColumnDimension('F')->setWidth(25);
 
         // Add logo and header
         $sheet->mergeCells('A1:F2');
@@ -49,10 +49,7 @@ class FormularExport
         $boxContent .= "Période : Du 01/" . str_pad($this->month, 2, '0', STR_PAD_LEFT) . "/2025 au " . 
                       date('t', strtotime('2025-' . $this->month . '-01')) . "/" . 
                       str_pad($this->month, 2, '0', STR_PAD_LEFT) . "/2025\n";
-        
-        // Add bank account and bank name on the same line
-        $bankInfo = $this->getBankInfo($this->formateur->name);
-        $boxContent .= "Numéro du compte bancaire : " . $this->formateur->bank_account . " (" . $bankInfo['bank_name'] . ")";
+        $boxContent .= "Numéro du compte bancaire : " . $this->formateur->bank_account . " (" . $this->formateur->bank_name . ")";
         
         $sheet->setCellValue('A4', $boxContent);
         $sheet->getStyle('A4')->getAlignment()->setWrapText(true);
@@ -74,14 +71,15 @@ class FormularExport
         // Data rows
         $row = 10;
         $totalHours = 0;
-        $rowCount = 0;
+        $totalAmount = 0;
         foreach ($this->seances as $seance) {
             $sheet->setCellValue('A' . $row, date('d/m/Y', strtotime($seance->date)));
             $sheet->setCellValue('B' . $row, $this->formatTime($seance->start_time));
             $sheet->setCellValue('C' . $row, $this->formatTime($seance->end_time));
             $sheet->setCellValue('D' . $row, $seance->duration);
-            $sheet->setCellValue('E' . $row, '30');
-            $sheet->setCellValue('F' . $row, $seance->duration * 30);
+            $sheet->setCellValue('E' . $row, $seance->price_per_hour . ' DH');
+            $amount = $seance->duration * $seance->price_per_hour;
+            $sheet->setCellValue('F' . $row, $amount . ' DH');
             
             // Center align all cells
             $sheet->getStyle('A' . $row . ':F' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -90,7 +88,7 @@ class FormularExport
             $sheet->getStyle('A' . $row . ':F' . $row)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
             
             $totalHours += $seance->duration;
-            $rowCount++;
+            $totalAmount += $amount;
             $row++;
         }
 
@@ -98,8 +96,8 @@ class FormularExport
         $sheet->mergeCells('A' . $row . ':C' . $row);
         $sheet->setCellValue('A' . $row, 'Total');
         $sheet->setCellValue('D' . $row, $totalHours . ' heures');
-        $sheet->setCellValue('E' . $row, ($rowCount * 30) . ' DH');
-        $sheet->setCellValue('F' . $row, $totalHours * 30);
+        $sheet->setCellValue('E' . $row, $this->formateur->salary->price_per_hour . ' DH');
+        $sheet->setCellValue('F' . $row, $totalAmount . ' DH');
         $sheet->getStyle('A' . $row . ':F' . $row)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
         $sheet->getStyle('A' . $row . ':F' . $row)->getFont()->setBold(true);
         $sheet->getStyle('A' . $row . ':F' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);

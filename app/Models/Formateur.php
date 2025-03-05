@@ -13,7 +13,8 @@ class Formateur extends Model
     protected $fillable = [
         'name',
         'bank_account',
-        'subjects'
+        'subjects',
+        'bank_name'
     ];
 
     public function seances(): HasMany
