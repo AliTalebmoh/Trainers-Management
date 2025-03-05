@@ -49,8 +49,10 @@ class FormularExport
         $boxContent .= "Période : Du 01/" . str_pad($this->month, 2, '0', STR_PAD_LEFT) . "/2025 au " . 
                       date('t', strtotime('2025-' . $this->month . '-01')) . "/" . 
                       str_pad($this->month, 2, '0', STR_PAD_LEFT) . "/2025\n";
-        $boxContent .= "Numéro du compte bancaire : " . $this->formateur->bank_account . "\n";
-        $boxContent .= "CIH Bank (Agence Azrou)";
+        
+        // Add bank account and bank name on the same line
+        $bankInfo = $this->getBankInfo($this->formateur->name);
+        $boxContent .= "Numéro du compte bancaire : " . $this->formateur->bank_account . " (" . $bankInfo['bank_name'] . ")";
         
         $sheet->setCellValue('A4', $boxContent);
         $sheet->getStyle('A4')->getAlignment()->setWrapText(true);
@@ -72,10 +74,11 @@ class FormularExport
         // Data rows
         $row = 10;
         $totalHours = 0;
+        $rowCount = 0;
         foreach ($this->seances as $seance) {
             $sheet->setCellValue('A' . $row, date('d/m/Y', strtotime($seance->date)));
-            $sheet->setCellValue('B' . $row, date('H:i', strtotime($seance->start_time)));
-            $sheet->setCellValue('C' . $row, date('H:i', strtotime($seance->end_time)));
+            $sheet->setCellValue('B' . $row, $this->formatTime($seance->start_time));
+            $sheet->setCellValue('C' . $row, $this->formatTime($seance->end_time));
             $sheet->setCellValue('D' . $row, $seance->duration);
             $sheet->setCellValue('E' . $row, '30');
             $sheet->setCellValue('F' . $row, $seance->duration * 30);
@@ -87,14 +90,15 @@ class FormularExport
             $sheet->getStyle('A' . $row . ':F' . $row)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
             
             $totalHours += $seance->duration;
+            $rowCount++;
             $row++;
         }
 
         // Total row
         $sheet->mergeCells('A' . $row . ':C' . $row);
         $sheet->setCellValue('A' . $row, 'Total');
-        $sheet->mergeCells('D' . $row . ':E' . $row);
-        $sheet->setCellValue('D' . $row, $totalHours . ' heures × 30 DH');
+        $sheet->setCellValue('D' . $row, $totalHours . ' heures');
+        $sheet->setCellValue('E' . $row, ($rowCount * 30) . ' DH');
         $sheet->setCellValue('F' . $row, $totalHours * 30);
         $sheet->getStyle('A' . $row . ':F' . $row)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
         $sheet->getStyle('A' . $row . ':F' . $row)->getFont()->setBold(true);
@@ -119,5 +123,33 @@ class FormularExport
         $writer->save($path);
 
         return $filename;
+    }
+
+    private function formatTime($time)
+    {
+        return date('H\hi', strtotime($time));
+    }
+
+    private function getBankInfo($trainerName)
+    {
+        // Map of trainers to their bank information
+        $bankMap = [
+            'AIT KHELLOU Samira' => ['bank_name' => 'Banque Populaire', 'agency' => 'Azrou'],
+            'BOURZAMA Zakia' => ['bank_name' => 'CIH Bank', 'agency' => 'Azrou'],
+            'ZIZOUNE Fatima' => ['bank_name' => 'Attijariwafa Bank', 'agency' => 'Azrou'],
+            'SAFI Milouda' => ['bank_name' => 'Bank Al-Maghrib', 'agency' => 'Azrou'],
+            'EL OUARGUI Lhoussaine' => ['bank_name' => 'BMCE Bank', 'agency' => 'Azrou'],
+            'ABARAOU Moha' => ['bank_name' => 'CIH Bank', 'agency' => 'Azrou'],
+            'EL BACHIRI Mouhcine' => ['bank_name' => 'Banque Populaire', 'agency' => 'Azrou'],
+            'QAIDI Ali' => ['bank_name' => 'Attijariwafa Bank', 'agency' => 'Azrou'],
+            'MOUFADDAL Mohamed' => ['bank_name' => 'CIH Bank', 'agency' => 'Azrou'],
+            'EL AAHED Fatima-Zohra' => ['bank_name' => 'BMCE Bank', 'agency' => 'Azrou'],
+            'BOUZIANE Mouna' => ['bank_name' => 'Banque Populaire', 'agency' => 'Azrou'],
+            'BENBRA Samir' => ['bank_name' => 'CIH Bank', 'agency' => 'Azrou'],
+            'BARIQI ALAOUI Khadija' => ['bank_name' => 'Attijariwafa Bank', 'agency' => 'Azrou'],
+            'HABRANE Hassane' => ['bank_name' => 'BMCE Bank', 'agency' => 'Azrou'],
+        ];
+
+        return $bankMap[$trainerName] ?? ['bank_name' => 'CIH Bank', 'agency' => 'Azrou'];
     }
 } 
