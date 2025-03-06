@@ -1,66 +1,162 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Trainers Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel-based application for managing trainers, their sessions, and generating payment reports. This system helps educational institutions manage trainer information, track sessions, and automate payment calculations.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Trainer management (personal and bank information)
+- Session tracking and management
+- Monthly hours calculation
+- Automated payment calculation
+- Excel report generation
+- Bank information management
+- Bulk session updates
+- Monthly session summaries
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP >= 8.1
+- Composer
+- MySQL >= 5.7
+- Node.js & NPM
+- Laravel 10.x requirements
 
-## Learning Laravel
+## Installation Guide
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/Trainers-Management.git
+   cd Trainers-Management
+   ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+3. **Install JavaScript dependencies**
+   ```bash
+   npm install
+   ```
 
-## Laravel Sponsors
+4. **Environment Setup**
+   ```bash
+   # Copy the example env file
+   cp .env.example .env
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+   # Generate application key
+   php artisan key:generate
+   ```
 
-### Premium Partners
+5. **Configure Database**
+   - Open `.env` file and update database credentials:
+     ```
+     DB_CONNECTION=mysql
+     DB_HOST=127.0.0.1
+     DB_PORT=3306
+     DB_DATABASE=trainers_management
+     DB_USERNAME=your_username
+     DB_PASSWORD=your_password
+     ```
+   - Create a new MySQL database named `trainers_management`
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+6. **Run Migrations and Seed Data**
+   ```bash
+   php artisan migrate:fresh --seed
+   ```
+
+7. **Create Storage Link**
+   ```bash
+   php artisan storage:link
+   ```
+
+8. **Build Assets**
+   ```bash
+   npm run dev
+   ```
+
+9. **Start the Development Server**
+   ```bash
+   php artisan serve
+   ```
+
+The application will be available at `http://localhost:8000`
+
+## Default Data
+
+After seeding, the system will create:
+- Sample trainers with basic information
+- Default session schedules
+- Initial salary records
+- Bank information templates
+
+## Usage Guide
+
+### Managing Trainers
+
+1. **View Trainers**
+   - Access the main dashboard to see all trainers
+   - Filter trainers by month using the dropdown
+
+2. **Edit Trainer Information**
+   - Click "Edit" next to any trainer
+   - Update personal information, bank details, or session schedules
+   - Changes to session times and duration will apply to all sessions
+
+3. **View Details**
+   - Click "View Details" to see comprehensive trainer information
+   - View session history and payment calculations
+
+4. **Generate Reports**
+   - Use the download button to generate Excel reports
+   - Reports include session details and payment calculations
+
+### Session Management
+
+- **Monthly Schedule**
+  - Set standard start and end times
+  - Define hours per session
+  - Update total monthly hours
+
+- **Bulk Updates**
+  - Changes to session times apply to all sessions
+  - Price per hour updates affect all calculations
+
+### Payment Calculations
+
+The system automatically:
+- Calculates total hours per month
+- Applies the defined price per hour
+- Updates payment totals
+- Generates formatted reports
+
+## Troubleshooting
+
+1. **Permission Issues**
+   ```bash
+   chmod -R 777 storage bootstrap/cache
+   ```
+
+2. **Composer Issues**
+   ```bash
+   composer dump-autoload
+   php artisan config:clear
+   php artisan cache:clear
+   ```
+
+3. **Database Issues**
+   ```bash
+   php artisan migrate:fresh --seed
+   ```
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a new Pull Request
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License.
