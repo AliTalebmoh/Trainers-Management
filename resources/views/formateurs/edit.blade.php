@@ -69,7 +69,7 @@
                     <i class="fas fa-info-circle"></i> Changes made here will be applied to all months.
                 </div>
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="mb-3">
                             <label for="total_hours" class="form-label">Total Hours per Month</label>
                             <input type="number" step="0.5" class="form-control @error('total_hours') is-invalid @enderror"
@@ -80,7 +80,7 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="mb-3">
                             <label for="start_time" class="form-label">Typical Start Time</label>
                             <input type="time" class="form-control @error('start_time') is-invalid @enderror"
@@ -91,13 +91,24 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="mb-3">
                             <label for="end_time" class="form-label">Typical End Time</label>
                             <input type="time" class="form-control @error('end_time') is-invalid @enderror"
                                    id="end_time" name="end_time" 
                                    value="{{ old('end_time', $monthlyData['typical_end_time']) }}" required>
                             @error('end_time')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="duration" class="form-label">Hours per Session</label>
+                            <input type="number" step="0.5" class="form-control @error('duration') is-invalid @enderror"
+                                   id="duration" name="duration" 
+                                   value="{{ old('duration', $monthlyData['typical_duration']) }}" required>
+                            @error('duration')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>

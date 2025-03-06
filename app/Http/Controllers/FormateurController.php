@@ -21,7 +21,7 @@ class FormateurController extends Controller
         // Calculate totals for the selected month
         foreach ($formateurs as $formateur) {
             $totalHours = $formateur->seances->sum('duration');
-            $totalAmount = $totalHours * 30.00;
+            $totalAmount = $totalHours * $formateur->salary->price_per_hour;
             
             // Update or create salary record for this month
             $formateur->salary->update([
@@ -69,7 +69,8 @@ class FormateurController extends Controller
                 return [
                     'total_hours' => $sessions->sum('duration'),
                     'typical_start_time' => $sessions->first()->start_time->format('H:i'),
-                    'typical_end_time' => $sessions->first()->end_time->format('H:i')
+                    'typical_end_time' => $sessions->first()->end_time->format('H:i'),
+                    'typical_duration' => $sessions->first()->duration
                 ];
             })
             ->first();
@@ -90,6 +91,7 @@ class FormateurController extends Controller
             'total_hours' => 'required|numeric|min:0',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
+            'duration' => 'required|numeric|min:0'
         ]);
 
         // Update trainer basic info
@@ -116,7 +118,7 @@ class FormateurController extends Controller
                     ->update([
                         'start_time' => $validated['start_time'],
                         'end_time' => $validated['end_time'],
-                        'duration' => $validated['total_hours'] / $sessionsCount,
+                        'duration' => $validated['duration'],
                         'price_per_hour' => $validated['price_per_hour']
                     ]);
             }
