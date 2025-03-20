@@ -14,7 +14,12 @@ class Formateur extends Model
         'name',
         'bank_account',
         'subjects',
-        'bank_name'
+        'bank_name',
+        'session_days'
+    ];
+
+    protected $casts = [
+        'session_days' => 'array',
     ];
 
     public function seances(): HasMany

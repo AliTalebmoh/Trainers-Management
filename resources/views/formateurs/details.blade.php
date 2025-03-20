@@ -53,31 +53,52 @@
                     <thead>
                         <tr>
                             <th>Date</th>
+                            <th>Day</th>
                             <th>Start Time</th>
                             <th>End Time</th>
                             <th>Duration</th>
                             <th>Price per Hour</th>
                             <th>Total Price</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($seances as $seance)
                         <tr>
                             <td>{{ \Carbon\Carbon::parse($seance->date)->format('d/m/Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($seance->date)->format('l') }}</td>
                             <td>{{ \Carbon\Carbon::parse($seance->start_time)->format('H:i') }}</td>
                             <td>{{ \Carbon\Carbon::parse($seance->end_time)->format('H:i') }}</td>
                             <td>{{ $seance->duration }} hours</td>
                             <td>{{ $seance->price_per_hour }} DH</td>
                             <td>{{ $seance->duration * $seance->price_per_hour }} DH</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ route('session.edit', ['session_id' => $seance->id]) }}" 
+                                       class="btn btn-warning btn-sm">
+                                       <i class="bi bi-pencil"></i> Edit
+                                    </a>
+                                    <form action="{{ route('session.delete', ['session_id' => $seance->id]) }}" 
+                                          method="POST" class="d-inline" 
+                                          onsubmit="return confirm('Are you sure you want to delete this session?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="3"><strong>Total</strong></td>
+                            <td colspan="4"><strong>Total</strong></td>
                             <td><strong>{{ $seances->sum('duration') }} hours</strong></td>
                             <td></td>
                             <td><strong>{{ $seances->sum(function($s) { return $s->duration * $s->price_per_hour; }) }} DH</strong></td>
+                            <td></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -94,4 +115,4 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection
